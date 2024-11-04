@@ -1,0 +1,32 @@
+<div class="game-board-container">
+  <!-- Campos de nombres de jugadores -->
+  <div class="player-names">
+    <mat-form-field appearance="outline" class="player-name">
+      <mat-label>Jugador 1</mat-label>
+      <input matInput placeholder="Nombre" [(ngModel)]="nombreJugador1" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="player-name">
+      <mat-label>Jugador 2</mat-label>
+      <input matInput placeholder="Nombre" [(ngModel)]="nombreJugador2" />
+    </mat-form-field>
+  </div>
+
+  <!-- Tablero de juego -->
+  <div class="tictactoe-board">
+    <button mat-raised-button *ngFor="let cell of board; let i = index" (click)="makeMove(i)">
+      {{ cell }}
+    </button>
+  </div>
+
+  <!-- Botones para iniciar y anular la partida -->
+  <div class="action-buttons">
+    <button mat-raised-button color="primary" (click)="startGame()">Iniciar</button>
+    <button mat-raised-button color="warn" (click)="resetGame()">Anular</button>
+  </div>
+
+  <!-- Mostrar el ganador -->
+  <div class="winner-display">
+    <span *ngIf="winner">Ganador: {{ winner }}</span>
+  </div>
+</div>

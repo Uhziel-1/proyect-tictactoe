@@ -1,0 +1,15 @@
+<div class="layout-container">
+  <div class="main-container">
+    <div class="left-panel">
+      <app-game-board></app-game-board>
+    </div>
+
+    <div class="right-panel" *ngIf="showStatusBoard">
+      <app-game-status></app-game-status>
+    </div>
+    <!-- Botón para mostrar/ocultar el historial de partidas -->
+    <button mat-raised-button color="primary" (click)="toggleStatusBoard()">
+      {{ showStatusBoard ? 'Ocultar Historial' : 'Mostrar Historial' }}
+    </button>
+  </div>
+</div>
