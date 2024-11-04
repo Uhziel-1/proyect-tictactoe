@@ -44,10 +44,10 @@ public class ResultadoController {
     public ResponseEntity<Void> save(@Valid @RequestBody ResultadoDTO dto) {
         logger.info("Recibiendo datos para guardar: {}", dto);
         resultadoService.guardar(dto);
-        // Resultado obj = resultadoService.guardar(dto);
+        Resultado obj = resultadoService.save(resultadoMapper.toEntity(dto));
         // logger.info("Entidad mapeada: {}", obj);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(location).build();
     }
 
