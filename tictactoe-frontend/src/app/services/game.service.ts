@@ -29,7 +29,7 @@ export class GameService {
   }
 
   save(resultado: Resultado):Observable<Resultado>{
-    return this.http.post<Resultado>(`${this.url}/resultados`, resultado).pipe(
+    return this.http.post<Resultado>(this.url, resultado).pipe(
       tap(() => this.findAll())
     );
   }
