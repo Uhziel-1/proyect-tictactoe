@@ -6,11 +6,10 @@ import com.exam.tictactoe.mappers.ResultadoMapper;
 import com.exam.tictactoe.model.Resultado;
 import com.exam.tictactoe.service.ResultadoService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -63,4 +62,11 @@ public class ResultadoController {
         resultadoService.delete((id));
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/last")
+    public ResponseEntity<ResultadoDTO> getLastResultado() {
+        ResultadoDTO lastResultado = resultadoService.findLast();
+        return new ResponseEntity<>(lastResultado, HttpStatus.OK);
+    }
+
 }

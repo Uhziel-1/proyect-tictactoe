@@ -1,9 +1,9 @@
 <form [formGroup]="form" class="example-container" (submit)="operate()" #frmResultado="ngForm" >
-  <div [hidden]="true" >
-    <mat-form-field>
-      <input matInput placeholder="ID" formControlName="idResultado" >
-    </mat-form-field>
-  </div>
+    <div *ngIf="form.controls['id'].value">
+        <mat-form-field>
+            <input matInput placeholder="ID" formControlName="id" readonly>
+        </mat-form-field>
+    </div>
   <mat-form-field>
     <input matInput placeholder="Nombre Partida" formControlName="nombrePartida">
     @if (f['nombrePartida'].errors?.['required'] && f['nombrePartida'].touched) {
@@ -44,7 +44,7 @@
     <mat-icon>done</mat-icon>
     <span>Iniciar</span>
   </button>
-  <button mat-button type="button"  color="accent">
+  <button mat-button type="button"  color="accent" (click)="anular()" >
     <mat-icon>cancel</mat-icon>
     <span>Anular</span>
   </button>

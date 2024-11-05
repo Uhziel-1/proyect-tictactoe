@@ -7,6 +7,7 @@ import com.exam.tictactoe.repository.GenericCrudRepository;
 import com.exam.tictactoe.repository.ResultadoRepository;
 import com.exam.tictactoe.service.ResultadoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,4 +28,15 @@ public class ResultadoServiceImp extends GenericCrudServiceImp<Resultado,Long> i
         System.out.println(resultado);
         return null;
     }
+
+    @Override
+    public ResultadoDTO findLast() {
+        Resultado lastResultado = repo.findFirstByOrderByIdDesc();
+        System.out.println(lastResultado.getId());
+        ResultadoDTO resultadoDTO = resultadoMapper.toDTO(lastResultado);
+        System.out.println(resultadoDTO.getId());
+        return resultadoMapper.toDTO(lastResultado);
+    }
+
+
 }

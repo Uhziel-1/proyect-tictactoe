@@ -1,5 +1,5 @@
 export class Resultado{
-  idResultado!: number
+  id!: number
   nombrePartida!: string
   nombreJugador1!: string
   nombreJugador2!: string

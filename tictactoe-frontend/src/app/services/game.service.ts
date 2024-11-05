@@ -49,4 +49,8 @@ export class GameService {
   setMessageChange(data: string){
     this.messageChange.next(data);
   }
+
+  findLast(): Observable<Resultado> {
+    return this.http.get<Resultado>(`${this.url}/last`);
+  }
 }
