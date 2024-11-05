@@ -1,50 +1,14 @@
-.game-board-container {
+.example-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  background-color: #e6f4d7; /* Fondo específico para el tablero */
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex-direction: row;
+  gap: 1rem;
+  padding: 2rem;
 }
 
-.player-names {
-  display: flex;
-  justify-content: space-between;
+.example-container>* {
   width: 100%;
-  gap: 16px;
 }
 
-.player-name {
-  flex: 1;
-}
-
-.tictactoe-board {
-  display: grid;
-  grid-template-columns: repeat(3, 100px);
-  grid-template-rows: repeat(3, 100px);
-  gap: 8px;
-  margin: 20px 0;
-}
-
-.tictactoe-board button {
-  width: 100px;
-  height: 100px;
-  font-size: 24px;
-  color: #333;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  background-color: #ffffff;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 16px;
-}
-
-.winner-display {
-  font-size: 18px;
-  font-weight: bold;
-  color: #4caf50;
+.invalid {
+  color: red;
 }

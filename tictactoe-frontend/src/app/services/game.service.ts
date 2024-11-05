@@ -1,32 +1,52 @@
 import { Injectable } from '@angular/core';
 import {Resultado} from '../model/Resultado';
-import {GenericService} from './generic.service';
-import {BehaviorSubject, Subject} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment.development';
+import {BehaviorSubject, Observable, Subject, tap} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
-export class GameService extends GenericService<Resultado> {
+export class GameService {
+
+  private url: string = `${environment.HOST}/partida`;
 
   private resultadoSubject = new BehaviorSubject<Resultado[]>([]);
+  resultados$ = this.resultadoSubject.asObservable();
+
   private messageChange: Subject<string> = new Subject<string>;
 
-  constructor(protected override http: HttpClient) {
-    super(http, `${environment.HOST}/partida`);
+  constructor(private http: HttpClient) { }
+
+  findAll(): void {
+    this.http.get<Resultado[]>(this.url).subscribe(data =>{
+      this.resultadoSubject.next(data)
+    })
   }
 
-  setUnidadMedidaChange(data: Resultado[]) {
-    this.resultadoSubject.next(data);
+  findById(id: number){
+    return this.http.get<Resultado>(this.url+`/${id}`);
   }
 
-  getUnidadMedidaChange() {
-    return this.resultadoSubject.asObservable();
+  save(resultado: Resultado):Observable<Resultado>{
+    return this.http.post<Resultado>(`${this.url}/resultados`, resultado).pipe(
+      tap(() => this.findAll())
+    );
   }
 
-  setMessageChange(data: string) {
+  update(id: number, resultado: Resultado):Observable<Resultado>{
+    return this.http.put<Resultado>(`${this.url}/${id}`, resultado).pipe(
+      tap(() => this.findAll())
+    )
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${id}`).pipe(
+      tap(() => this.findAll())
+    );
+  }
+
+  setMessageChange(data: string){
     this.messageChange.next(data);
   }
-
 }

@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {LayoutModule} from '@angular/cdk/layout';
-import {LayoutComponent} from './components/layout/layout.component';
+import {GameBoardComponent} from './components/game-board/game-board.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, LayoutComponent, ],
+  imports: [RouterOutlet, GameBoardComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

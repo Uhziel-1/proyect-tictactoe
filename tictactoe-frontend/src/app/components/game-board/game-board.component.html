@@ -1,32 +1,51 @@
-<div class="game-board-container">
-  <!-- Campos de nombres de jugadores -->
-  <div class="player-names">
-    <mat-form-field appearance="outline" class="player-name">
-      <mat-label>Jugador 1</mat-label>
-      <input matInput placeholder="Nombre" [(ngModel)]="nombreJugador1" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="player-name">
-      <mat-label>Jugador 2</mat-label>
-      <input matInput placeholder="Nombre" [(ngModel)]="nombreJugador2" />
+<form [formGroup]="form" class="example-container" (submit)="operate()" #frmResultado="ngForm" >
+  <div [hidden]="true" >
+    <mat-form-field>
+      <input matInput placeholder="ID" formControlName="idResultado" >
     </mat-form-field>
   </div>
-
-  <!-- Tablero de juego -->
-  <div class="tictactoe-board">
-    <button mat-raised-button *ngFor="let cell of board; let i = index" (click)="makeMove(i)">
-      {{ cell }}
-    </button>
-  </div>
-
-  <!-- Botones para iniciar y anular la partida -->
-  <div class="action-buttons">
-    <button mat-raised-button color="primary" (click)="startGame()">Iniciar</button>
-    <button mat-raised-button color="warn" (click)="resetGame()">Anular</button>
-  </div>
-
-  <!-- Mostrar el ganador -->
-  <div class="winner-display">
-    <span *ngIf="winner">Ganador: {{ winner }}</span>
-  </div>
-</div>
+  <mat-form-field>
+    <input matInput placeholder="Nombre Partida" formControlName="nombrePartida">
+    @if (f['nombrePartida'].errors?.['required'] && f['nombrePartida'].touched) {
+      <small class="invalid">Es requerido</small>
+    }
+    @if (f['nombrePartida'].errors?.['minlength'] && f['nombrePartida'].touched) {
+      <small class="invalid">Mínimo 5 Caracteres</small>
+    }
+    @if (f['nombrePartida'].errors?.['maxlength'] && f['nombrePartida'].touched) {
+      <small class="invalid">Máximo 15 Caracteres</small>
+    }
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Nombre Jugador" formControlName="nombreJugador1">
+    @if (f['nombreJugador1'].errors?.['required'] && f['nombreJugador1'].touched) {
+      <small class="invalid">Es requerido</small>
+    }
+    @if (f['nombreJugador1'].errors?.['minlength'] && f['nombreJugador1'].touched) {
+      <small class="invalid">Mínimo 5 Caracteres</small>
+    }
+    @if (f['nombreJugador1'].errors?.['maxlength'] && f['nombreJugador1'].touched) {
+      <small class="invalid">Máximo 15 Caracteres</small>
+    }
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Nombre Jugador" formControlName="nombreJugador2">
+    @if (f['nombreJugador2'].errors?.['required'] && f['nombreJugador2'].touched) {
+      <small class="invalid">Es requerido</small>
+    }
+    @if (f['nombreJugador2'].errors?.['minlength'] && f['nombreJugador2'].touched) {
+      <small class="invalid">Mínimo 5 Caracteres</small>
+    }
+    @if (f['nombreJugador2'].errors?.['maxlength'] && f['nombreJugador2'].touched) {
+      <small class="invalid">Máximo 15 Caracteres</small>
+    }
+  </mat-form-field>
+  <button mat-button type="submit" [disabled]="frmResultado.invalid">
+    <mat-icon>done</mat-icon>
+    <span>Iniciar</span>
+  </button>
+  <button mat-button type="button"  color="accent">
+    <mat-icon>cancel</mat-icon>
+    <span>Anular</span>
+  </button>
+</form>
