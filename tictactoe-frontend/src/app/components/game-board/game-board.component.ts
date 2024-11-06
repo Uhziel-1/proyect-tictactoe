@@ -4,8 +4,8 @@ import {GameService} from '../../services/game.service';
 import {ActivatedRoute} from '@angular/router';
 import {MaterialModule} from '../../material/material.module';
 import {Resultado} from '../../model/Resultado';
-import {switchMap} from 'rxjs';
-import {NgIf} from "@angular/common";
+import {Observable, switchMap} from 'rxjs';
+import {NgForOf, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-game-board',
@@ -13,7 +13,8 @@ import {NgIf} from "@angular/common";
   imports: [
     MaterialModule,
     ReactiveFormsModule,
-    NgIf
+    NgIf,
+    NgForOf
   ],
   templateUrl: './game-board.component.html',
   styleUrl: './game-board.component.css'
@@ -21,8 +22,19 @@ import {NgIf} from "@angular/common";
 export class GameBoardComponent implements OnInit {
 
   form!: FormGroup;
-  id: number | null = null;  // Inicializamos id como null
+  id: number | null = null;
   isEdit: boolean = false;
+
+  board: string[] = Array(9).fill('');
+  currentPlayer: string = 'X';
+  gameStatus: string = '';
+  gameInProgress: boolean = false;
+
+  player1Name: string = '';
+  player2Name: string = '';
+
+  isAnularDisabled: boolean = true;
+  isIniciarDisabled: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -50,7 +62,6 @@ export class GameBoardComponent implements OnInit {
     if (this.isEdit && this.id !== null) {
       this.gameService.findById(this.id).subscribe(data => {
         if (data) {
-          // Usamos patchValue para evitar errores de referencia
           this.form.patchValue({
             id: data.id,
             nombrePartida: data.nombrePartida,
@@ -62,67 +73,123 @@ export class GameBoardComponent implements OnInit {
     }
   }
 
-  operate() {
+  iniciar() {
     const resultado: Resultado = new Resultado();
-    resultado.id = this.form.value['id'];
     resultado.nombrePartida = this.form.value['nombrePartida'];
     resultado.nombreJugador1 = this.form.value['nombreJugador1'];
     resultado.nombreJugador2 = this.form.value['nombreJugador2'];
-
     resultado.ganador = 'Sin Ganador';
     resultado.punto = 0;
     resultado.estado = 'Jugando';
 
-    if (this.isEdit && resultado.id !== null) {
-      this.gameService.update(resultado.id, resultado).subscribe(() => {
-        this.gameService.findAll();
-        this.gameService.resultados$.subscribe(data => {
-          this.gameService.setMessageChange('UPDATE!')
-          this.initForm();
-        });
-      });
-    } else {
-      this.gameService.save(resultado)
-        .pipe(switchMap(() => this.gameService.resultados$))
-        .subscribe(data => {
-          this.gameService.findLast().subscribe((lastResultado) => {
-            console.log('Last Resultado ID:', lastResultado.id);
-            this.form.patchValue({
-              id: lastResultado.id,
-            });
-            console.log('Formulario actualizado:', this.form.value);
+    this.gameService.save(resultado).subscribe(() => {
+      console.log('Created')
+    });
 
-          });
-          this.gameService.setMessageChange('CREATED!')
-          this.initForm();
-        });
+    this.player1Name = this.form.value['nombreJugador1'];
+    this.player2Name = this.form.value['nombreJugador2'];
+
+    this.resetGame();
+    this.gameStatus = 'Jugando';
+    this.isIniciarDisabled = true;
+    this.isAnularDisabled = false;
+    this.gameInProgress = true;
+  }
+
+  makeMove(index: number): void {
+    if (!this.gameInProgress || this.board[index]) return;
+
+    this.board[index] = this.currentPlayer;
+    if (this.checkWinner()) {
+      this.ganador()
+    } else if (this.board.every(cell => cell)) {
+      this.empate()
+    } else {
+      this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
     }
   }
 
-  anular() {
-    const resultado: Resultado = {
-      id: this.form.value['id'],
-      nombrePartida: this.form.value['nombrePartida'],
-      nombreJugador1: this.form.value['nombreJugador1'],
-      nombreJugador2: this.form.value['nombreJugador2'],
-      ganador: '-----',
-      punto: 0,
-      estado: 'Anulado'
-    };
-
-    if (resultado.id !== null) {  // Solo intentamos anular si hay un id válido
-      this.gameService.update(resultado.id, resultado).subscribe(() => {
-        this.gameService.findAll();
-        this.gameService.resultados$.subscribe(() => {
-          this.gameService.setMessageChange('ANULADO!');
-          this.initForm();  // Refresca el formulario tras anular
-        });
+  ganador():void {
+    this.findLast().subscribe((ultimoRegistro: Resultado) => {
+      ultimoRegistro.ganador = this.currentPlayer === 'X' ? this.player1Name : this.player2Name;
+      ultimoRegistro.punto = 10;
+      ultimoRegistro.estado = 'Finalizado';
+      this.gameStatus = `Ganador: ${ultimoRegistro.ganador}`;
+      this.gameService.update(ultimoRegistro.id, ultimoRegistro).subscribe(() => {
+        console.log(`Ganador: ${ultimoRegistro.ganador}`);
+        this.isIniciarDisabled = false;
+        this.isAnularDisabled = true;
+        this.resetGame();
       });
-    }
+    })
+    this.clearForm()
+  }
+
+  empate():void {
+    this.findLast().subscribe((ultimoRegistro: Resultado) => {
+      ultimoRegistro.ganador = 'Empate';
+      ultimoRegistro.punto = 5;
+      ultimoRegistro.estado = 'Finalizado';
+      this.gameStatus = 'Empate';
+      this.gameService.update(ultimoRegistro.id, ultimoRegistro).subscribe(() => {
+        console.log(`Empate`);
+        this.isIniciarDisabled = false;
+        this.isAnularDisabled = true;
+        this.resetGame();
+      });
+    })
+    this.clearForm()
+  }
+
+  anular():void {
+    this.findLast().subscribe((ultimoRegistro: Resultado) => {
+      if (ultimoRegistro.id) {
+        ultimoRegistro.ganador = '-----';
+        ultimoRegistro.punto = 0;
+        ultimoRegistro.estado = 'Anulado';
+
+        this.gameService.update(ultimoRegistro.id, ultimoRegistro).subscribe(() => {
+          console.log('Anulado')
+          this.gameStatus = 'Juego Anulado';
+          this.isIniciarDisabled = false;
+          this.isAnularDisabled = true;
+        });
+      }
+      this.clearForm()
+    });
+  }
+
+  checkWinner(): boolean {
+    const winPatterns = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    return winPatterns.some(pattern =>
+      pattern.every(index => this.board[index] === this.currentPlayer)
+    );
+  }
+
+  resetGame() {
+    this.board.fill('');
+    this.currentPlayer = 'X';
+    this.gameInProgress = true;
+  }
+
+  clearForm() {
+    this.form.patchValue({
+      nombrePartida: ''
+    });
   }
 
   get f(){
     return this.form.controls;
   }
+
+  findLast(): Observable<Resultado> {
+    return this.gameService.findLast();
+  }
+
 
 }

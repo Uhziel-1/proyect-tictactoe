@@ -1,51 +1,47 @@
-<form [formGroup]="form" class="example-container" (submit)="operate()" #frmResultado="ngForm" >
-    <div *ngIf="form.controls['id'].value">
-        <mat-form-field>
-            <input matInput placeholder="ID" formControlName="id" readonly>
-        </mat-form-field>
-    </div>
-  <mat-form-field>
+<form [formGroup]="form" class="example-container" #frmResultado="ngForm">
+  <mat-form-field class="full-width">
     <input matInput placeholder="Nombre Partida" formControlName="nombrePartida">
-    @if (f['nombrePartida'].errors?.['required'] && f['nombrePartida'].touched) {
-      <small class="invalid">Es requerido</small>
-    }
-    @if (f['nombrePartida'].errors?.['minlength'] && f['nombrePartida'].touched) {
-      <small class="invalid">Mínimo 5 Caracteres</small>
-    }
-    @if (f['nombrePartida'].errors?.['maxlength'] && f['nombrePartida'].touched) {
-      <small class="invalid">Máximo 15 Caracteres</small>
-    }
+    <small *ngIf="f['nombrePartida'].hasError('required') && f['nombrePartida'].touched" class="invalid">Es requerido</small>
+    <small *ngIf="f['nombrePartida'].hasError('minlength') && f['nombrePartida'].touched" class="invalid">Mínimo 5 Caracteres</small>
+    <small *ngIf="f['nombrePartida'].hasError('maxlength') && f['nombrePartida'].touched" class="invalid">Máximo 15 Caracteres</small>
   </mat-form-field>
-  <mat-form-field>
-    <input matInput placeholder="Nombre Jugador" formControlName="nombreJugador1">
-    @if (f['nombreJugador1'].errors?.['required'] && f['nombreJugador1'].touched) {
-      <small class="invalid">Es requerido</small>
-    }
-    @if (f['nombreJugador1'].errors?.['minlength'] && f['nombreJugador1'].touched) {
-      <small class="invalid">Mínimo 5 Caracteres</small>
-    }
-    @if (f['nombreJugador1'].errors?.['maxlength'] && f['nombreJugador1'].touched) {
-      <small class="invalid">Máximo 15 Caracteres</small>
-    }
-  </mat-form-field>
-  <mat-form-field>
-    <input matInput placeholder="Nombre Jugador" formControlName="nombreJugador2">
-    @if (f['nombreJugador2'].errors?.['required'] && f['nombreJugador2'].touched) {
-      <small class="invalid">Es requerido</small>
-    }
-    @if (f['nombreJugador2'].errors?.['minlength'] && f['nombreJugador2'].touched) {
-      <small class="invalid">Mínimo 5 Caracteres</small>
-    }
-    @if (f['nombreJugador2'].errors?.['maxlength'] && f['nombreJugador2'].touched) {
-      <small class="invalid">Máximo 15 Caracteres</small>
-    }
-  </mat-form-field>
-  <button mat-button type="submit" [disabled]="frmResultado.invalid">
-    <mat-icon>done</mat-icon>
-    <span>Iniciar</span>
-  </button>
-  <button mat-button type="button"  color="accent" (click)="anular()" >
-    <mat-icon>cancel</mat-icon>
-    <span>Anular</span>
-  </button>
+
+  <!-- Nombres de Jugadores: Ocupan una fila, uno al lado del otro -->
+  <div class="player-names">
+    <mat-form-field class="half-width">
+      <input matInput placeholder="Nombre Jugador 1" formControlName="nombreJugador1" [readonly]="this.isIniciarDisabled">
+      <small *ngIf="f['nombreJugador1'].hasError('required') && f['nombreJugador1'].touched" class="invalid">Es requerido</small>
+      <small *ngIf="f['nombreJugador1'].hasError('minlength') && f['nombreJugador1'].touched" class="invalid">Mínimo 5 Caracteres</small>
+      <small *ngIf="f['nombreJugador1'].hasError('maxlength') && f['nombreJugador1'].touched" class="invalid">Máximo 15 Caracteres</small>
+    </mat-form-field>
+
+    <mat-form-field class="half-width">
+      <input matInput placeholder="Nombre Jugador 2" formControlName="nombreJugador2" [readonly]="this.isIniciarDisabled">
+      <small *ngIf="f['nombreJugador2'].hasError('required') && f['nombreJugador2'].touched" class="invalid">Es requerido</small>
+      <small *ngIf="f['nombreJugador2'].hasError('minlength') && f['nombreJugador2'].touched" class="invalid">Mínimo 5 Caracteres</small>
+      <small *ngIf="f['nombreJugador2'].hasError('maxlength') && f['nombreJugador2'].touched" class="invalid">Máximo 15 Caracteres</small>
+    </mat-form-field>
+  </div>
+
+  <!-- Div para contenido adicional -->
+  <div class="extra-content">
+    <div class="game-board">
+      <div *ngFor="let cell of board; let i = index" class="cell" (click)="makeMove(i)">
+        {{ cell }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Botones Iniciar y Anular: En la misma fila -->
+  <div class="button-group">
+    <button mat-button type="button" (click)="iniciar()" [disabled]="frmResultado.invalid">
+      <mat-icon>done</mat-icon>
+      <span>Iniciar</span>
+    </button>
+    <p class="game-status">{{ gameStatus }}</p>
+    <button mat-button type="button" color="accent" (click)="anular()" [disabled]="isAnularDisabled">
+      <mat-icon>cancel</mat-icon>
+      <span>Anular</span>
+    </button>
+  </div>
 </form>
