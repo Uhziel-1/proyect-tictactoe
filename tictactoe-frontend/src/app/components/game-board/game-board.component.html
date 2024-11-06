@@ -44,4 +44,23 @@
       <span>Anular</span>
     </button>
   </div>
+
+  <div *ngIf="partida" class="ultimo-juego">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Último Juego</mat-card-title>
+        <mat-card-subtitle>Detalles de la partida</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <ul class="resultado-lista">
+          <li><strong>Nombre de la Partida:</strong> {{ partida.nombrePartida }}</li>
+          <li><strong>Jugador 1:</strong> {{ partida.nombreJugador1 }}</li>
+          <li><strong>Jugador 2:</strong> {{ partida.nombreJugador2 }}</li>
+          <li><strong>Ganador:</strong> {{ partida.ganador }}</li>
+          <li><strong>Puntos:</strong> {{ partida.punto }}</li>
+          <li><strong>Estado:</strong> {{ partida.estado }}</li>
+        </ul>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </form>

@@ -22,8 +22,6 @@ import {NgForOf, NgIf} from "@angular/common";
 export class GameBoardComponent implements OnInit {
 
   form!: FormGroup;
-  id: number | null = null;
-  isEdit: boolean = false;
 
   board: string[] = Array(9).fill('');
   currentPlayer: string = 'X';
@@ -36,41 +34,20 @@ export class GameBoardComponent implements OnInit {
   isAnularDisabled: boolean = true;
   isIniciarDisabled: boolean = false;
 
-  constructor(
-    private route: ActivatedRoute,
-    private gameService: GameService
-  ) {
+  ultimoJuego: boolean = true;
+  partida: Resultado | null = null;
 
-  }
+
+  constructor(
+    private gameService: GameService
+  ) {}
 
   ngOnInit(): void {
     this.form = new FormGroup({
-      id: new FormControl(null),
       nombrePartida: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(15)]),
       nombreJugador1: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(15)]),
       nombreJugador2: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(15)]),
     })
-
-    this.route.params.subscribe(data => {
-      this.id = data['id'];
-      this.isEdit = data['isEdit'] != null;
-      this.initForm();
-    })
-  }
-
-  initForm(): void {
-    if (this.isEdit && this.id !== null) {
-      this.gameService.findById(this.id).subscribe(data => {
-        if (data) {
-          this.form.patchValue({
-            id: data.id,
-            nombrePartida: data.nombrePartida,
-            nombreJugador1: data.nombreJugador1,
-            nombreJugador2: data.nombreJugador2,
-          });
-        }
-      })
-    }
   }
 
   iniciar() {
@@ -84,6 +61,7 @@ export class GameBoardComponent implements OnInit {
 
     this.gameService.save(resultado).subscribe(() => {
       console.log('Created')
+      this.partidaJuego()
     });
 
     this.player1Name = this.form.value['nombreJugador1'];
@@ -94,6 +72,7 @@ export class GameBoardComponent implements OnInit {
     this.isIniciarDisabled = true;
     this.isAnularDisabled = false;
     this.gameInProgress = true;
+    this.ultimoJuego = false
   }
 
   makeMove(index: number): void {
@@ -120,6 +99,8 @@ export class GameBoardComponent implements OnInit {
         this.isIniciarDisabled = false;
         this.isAnularDisabled = true;
         this.resetGame();
+        this.ultimoJuego = false
+        this.partidaJuego()
       });
     })
     this.clearForm()
@@ -135,7 +116,8 @@ export class GameBoardComponent implements OnInit {
         console.log(`Empate`);
         this.isIniciarDisabled = false;
         this.isAnularDisabled = true;
-        this.resetGame();
+        this.ultimoJuego = false
+        this.partidaJuego()
       });
     })
     this.clearForm()
@@ -153,6 +135,8 @@ export class GameBoardComponent implements OnInit {
           this.gameStatus = 'Juego Anulado';
           this.isIniciarDisabled = false;
           this.isAnularDisabled = true;
+          this.ultimoJuego = false
+          this.partidaJuego()
         });
       }
       this.clearForm()
@@ -191,5 +175,10 @@ export class GameBoardComponent implements OnInit {
     return this.gameService.findLast();
   }
 
+  partidaJuego(): void {
+    this.findLast().subscribe(resultado => {
+      this.partida = resultado;
+    });
+  }
 
 }

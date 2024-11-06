@@ -66,3 +66,40 @@
   font-weight: bold;
   margin: 10px 0;
 }
+
+.ultimo-juego {
+  margin-top: 20px;
+}
+
+.mat-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  padding: 16px;
+}
+
+.resultado-lista {
+  list-style-type: none;
+  padding: 0;
+}
+
+.resultado-lista li {
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.resultado-lista li:last-child {
+  border-bottom: none;
+}
+
+.mat-card-title {
+  font-size: 1.4rem;
+  color: #3f51b5;
+  font-weight: bold;
+}
+
+.mat-card-subtitle {
+  font-size: 1rem;
+  color: #757575;
+  font-weight: 300;
+}
